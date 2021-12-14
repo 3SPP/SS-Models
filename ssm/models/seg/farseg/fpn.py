@@ -1,6 +1,6 @@
 from paddle import nn
 import paddle.nn.functional as F
-from pprsm.utils import ConvReLU, kaiming_normal_init, constant_init
+from ssm.models.utils import ConvReLU, kaiming_normal_init, constant_init
 
 
 class FPN(nn.Layer):

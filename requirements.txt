@@ -1,0 +1,3 @@
+opencv-python==4.5.2.54
+paddleseg
+GDAL
