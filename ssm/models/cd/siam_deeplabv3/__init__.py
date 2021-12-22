@@ -1,0 +1,1 @@
+from .siam_deeplabv3 import SiamDeeplabV3, SiamDeeplabV3P
