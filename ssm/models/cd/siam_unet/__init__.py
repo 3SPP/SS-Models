@@ -1,1 +1,1 @@
-from .siam_unet import SiamUnet
+from .siam_unet import SiamUNet

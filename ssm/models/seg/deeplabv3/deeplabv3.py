@@ -10,7 +10,7 @@ class DeeplabV3(nn.Layer):
     def __init__(self, name_scope=None, dtype="float32"):
         super().__init__(name_scope=name_scope, dtype=dtype)
         
-    def forward(self, x1, x2):
+    def forward(self, x):
         pass
 
 
@@ -21,5 +21,5 @@ class DeeplabV3P(nn.Layer):
     def __init__(self, name_scope=None, dtype="float32"):
         super().__init__(name_scope=name_scope, dtype=dtype)
         
-    def forward(self, x1, x2):
+    def forward(self, x):
         pass
