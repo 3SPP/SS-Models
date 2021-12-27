@@ -17,7 +17,7 @@ import os
 import paddle
 import numpy as np
 from .raster import Raster
-from ssm.datas.transforms import Compose
+from ssm.datasets.transforms import Compose
 
 
 class RSDataset(paddle.io.Dataset):
@@ -106,28 +106,27 @@ class RSDataset(paddle.io.Dataset):
             self.curr_image1_worker, self.curr_image2_worker, self.curr_label_worker = \
                 self.file_list[self.__idx]
             self.__idx += 1
-            if self.__idx >= self.__len__():
-                self.__idx = 0
-        if self.mode == 'test':
-            im1, im2, _ = self.transforms(im1=self.curr_image1_worker.getData(),
-                                          im2=self.curr_image2_worker.getData() if \
-                                              self.curr_image2_worker is not None else None)
-            im1 = im1[np.newaxis, ...]
-            im2 = im2[np.newaxis, ...]
-            return im1, im2, self.curr_image1_worker.file_path
-        elif self.mode == 'val':
-            im1, im2, _ = self.transforms(im1=self.curr_image1_worker.getData(),
-                                          im2=self.curr_image2_worker.getData() if \
-                                              self.curr_image2_worker is not None else None)
-            label = self.curr_label_worker.getData()
-            label = label[np.newaxis, :, :]
-            return im1, im2, label
-        else:
-            im1, im2, label = self.transforms(im1=self.curr_image1_worker.getData(),
-                                              im2=self.curr_image2_worker.getData() if \
-                                                  self.curr_image2_worker is not None else None ,
-                                              label=self.curr_label_worker.getData())
-            return im1, im2, label
+            if self.__idx <= self.__len__():
+                if self.mode == 'test':
+                    im1, im2, _ = self.transforms(im1=self.curr_image1_worker.getData(),
+                                                im2=self.curr_image2_worker.getData() if \
+                                                    self.curr_image2_worker is not None else None)
+                    im1 = im1[np.newaxis, ...]
+                    im2 = im2[np.newaxis, ...]
+                    return im1, im2, self.curr_image1_worker.file_path
+                elif self.mode == 'val':
+                    im1, im2, _ = self.transforms(im1=self.curr_image1_worker.getData(),
+                                                im2=self.curr_image2_worker.getData() if \
+                                                    self.curr_image2_worker is not None else None)
+                    label = self.curr_label_worker.getData()
+                    label = label[np.newaxis, :, :]
+                    return im1, im2, label
+                else:
+                    im1, im2, label = self.transforms(im1=self.curr_image1_worker.getData(),
+                                                    im2=self.curr_image2_worker.getData() if \
+                                                        self.curr_image2_worker is not None else None ,
+                                                    label=self.curr_label_worker.getData())
+                    return im1, im2, label
 
     def __len__(self):
         return len(self.file_list)

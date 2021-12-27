@@ -3,7 +3,7 @@ import random
 import cv2
 import math
 from PIL import Image
-import ssm.datas.transforms.function as f
+import ssm.datasets.transforms.function as f
 
 
 class Compose:

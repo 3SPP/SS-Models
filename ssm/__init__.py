@@ -1,4 +1,3 @@
-   
 # Copyright (c) 2020 PaddlePaddle Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +13,4 @@
 # limitations under the License.
 
 
-from .train import train
-from .val import evaluate
-from .predict import predict
-from . import infer
-
-__all__ = ['train', 'evaluate', 'predict']
+from . import models, datasets
