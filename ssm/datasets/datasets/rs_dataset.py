@@ -46,6 +46,7 @@ class RSDataset(paddle.io.Dataset):
         self.cimw_1 = None
         self.cimw_2 = None
         self.claw = None
+        self.all_grids_number = 0
         self.__idx = 0
         if mode.lower() not in ['train', 'val', 'test']:
             raise ValueError(
@@ -96,18 +97,21 @@ class RSDataset(paddle.io.Dataset):
                                 if image2_path is not None else None
                 label_worker = Raster(label_path, [1, 1, 1], big_map, grid_size, overlap) \
                                if label_path is not None else None
+                self.all_grids_number += label_worker.grids_number
                 self.file_list.append([image1_worker, image2_worker, label_worker])
 
     def __getitem__(self, idx):
-        if self.big_map is False:
-            self.__idx = idx
-            self.cimw_1, self.cimw_2, self.claw = self.file_list[self.__idx]
-        else:
-            if (self.cimw_1 is None and self.claw is None) or \
-               (self.cimw_1.cyc_grid is True and self.claw.cyc_grid is True):
+        if idx < self.__len__():
+            if self.big_map is False:
+                self.__idx = idx
                 self.cimw_1, self.cimw_2, self.claw = self.file_list[self.__idx]
-                self.__idx += 1
-        if self.__idx <= self.__len__():
+            else:
+                if (self.cimw_1 is None and self.claw is None) or \
+                (self.cimw_1.cyc_grid is True and self.claw.cyc_grid is True):
+                    if self.__idx >= self.file_len:
+                        self.__idx = 0
+                    self.cimw_1, self.cimw_2, self.claw = self.file_list[self.__idx]
+                    self.__idx += 1
             if self.mode == 'test':
                 im1, im2, _ = self.transforms(im1=self.cimw_1.getData(),
                                               im2=self.cimw_2.getData() if \
@@ -137,6 +141,12 @@ class RSDataset(paddle.io.Dataset):
                     return im1, label
                 else:
                     return im1, im2, label
+        else:
+            raise StopIteration
+
+    @property
+    def file_len(self):
+        return len(self.file_list)
 
     def __len__(self):
-        return len(self.file_list)
+        return self.all_grids_number

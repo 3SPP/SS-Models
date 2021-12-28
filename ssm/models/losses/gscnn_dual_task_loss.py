@@ -13,10 +13,7 @@ import paddle
 import paddle.nn as nn
 import paddle.nn.functional as F
 
-from paddleseg.cvlibs import manager
 
-
-@manager.LOSSES.add_component
 class DualTaskLoss(nn.Layer):
     """
     The dual task loss implement of GSCNN

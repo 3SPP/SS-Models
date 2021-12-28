@@ -16,10 +16,7 @@ import paddle
 from paddle import nn
 import paddle.nn.functional as F
 
-from paddleseg.cvlibs import manager
 
-
-@manager.LOSSES.add_component
 class BootstrappedCrossEntropyLoss(nn.Layer):
     """
     Implements the cross entropy loss function.

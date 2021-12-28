@@ -16,10 +16,7 @@ import paddle
 import paddle.nn as nn
 import paddle.nn.functional as F
 
-from paddleseg.cvlibs import manager
 
-
-@manager.LOSSES.add_component
 class PixelContrastCrossEntropyLoss(nn.Layer):
     """
     The PixelContrastCrossEntropyLoss implementation based on PaddlePaddle.

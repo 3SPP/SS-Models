@@ -175,3 +175,10 @@ class Raster:
         if save_path is not None:
             self.saveMask(result, save_path, geoinfo)
         return result
+
+    @property
+    def grids_number(self):
+        if self.open_grid is False:
+            return 1
+        else:
+            return self.__grid_count[0] * self.__grid_count[1]

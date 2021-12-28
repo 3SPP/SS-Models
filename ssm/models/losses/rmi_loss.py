@@ -17,8 +17,6 @@ import paddle
 import paddle.nn as nn
 import paddle.nn.functional as F
 
-from paddleseg.cvlibs import manager
-
 _euler_num = 2.718281828
 _pi = 3.14159265
 _ln_2_pi = 1.837877
@@ -28,7 +26,6 @@ _POS_ALPHA = 5e-4
 _IS_SUM = 1
 
 
-@manager.LOSSES.add_component
 class RMILoss(nn.Layer):
     """
     Implements the Region Mutual Information(RMI) Loss（https://arxiv.org/abs/1910.12037） for Semantic Segmentation.

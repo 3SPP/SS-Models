@@ -16,10 +16,7 @@ import paddle
 from paddle import nn
 import paddle.nn.functional as F
 
-from paddleseg.cvlibs import manager
 
-
-@manager.LOSSES.add_component
 class L1Loss(nn.L1Loss):
     r"""
     This interface is used to construct a callable object of the ``L1Loss`` class.

@@ -16,10 +16,7 @@ import paddle
 from paddle import nn
 import paddle.nn.functional as F
 
-from paddleseg.cvlibs import manager
 
-
-@manager.LOSSES.add_component
 class CrossEntropyLoss(nn.Layer):
     """
     Implements the cross entropy loss function.
@@ -141,7 +138,6 @@ class CrossEntropyLoss(nn.Layer):
         return avg_loss
 
 
-@manager.LOSSES.add_component
 class DistillCrossEntropyLoss(CrossEntropyLoss):
     """
     The implementation of distill cross entropy loss.

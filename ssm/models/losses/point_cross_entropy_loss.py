@@ -16,9 +16,7 @@ import paddle
 from paddle import nn
 import paddle.nn.functional as F
 
-from paddleseg.cvlibs import manager
 
-@manager.LOSSES.add_component
 class PointCrossEntropyLoss(nn.Layer):
     """
     Implements the point cross entropy loss function.

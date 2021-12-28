@@ -39,30 +39,30 @@ train_dataset = RSDataset(
     work='cd',
     # file_path='DataSet/train_list.txt',  # seg / block
     # file_path='DataSet/train_list_2.txt',  # seg / big_map
-    file_path='DataSet/train_list_3.txt',  # cd / block
-    # file_path='DataSet/train_list_4.txt',  # cd / big_map
+    # file_path='DataSet/train_list_3.txt',  # cd / block
+    file_path='DataSet/train_list_4.txt',  # cd / big_map
     separator=' ',
-    big_map=False
-    # big_map=True
+    # big_map=False
+    big_map=True
 )
 
 # display
 lens = len(train_dataset)
 print(f"lens={lens}")
-# for idx, data in enumerate(train_dataset):
-#     if len(data) == 3:
-#         img1, img2, lab = data
-#         print(idx, img1.shape, img2.shape, lab.shape)
-#     else:
-#         img1, lab = data
-#         img2 = None
-#         print(idx, img1.shape, lab.shape)
-#     cv2.imshow("img1", img2show(img1))
-#     if img2 is not None:
-#         cv2.imshow("img2", img2show(img2))
-#     cv2.imshow("lab", lab)
-#     cv2.waitKey(0)
-#     cv2.destroyAllWindows()
+for idx, data in enumerate(train_dataset):
+    if len(data) == 3:
+        img1, img2, lab = data
+        print(idx, img1.shape, img2.shape, lab.shape)
+    elif len(data) == 2:
+        img1, lab = data
+        img2 = None
+        print(idx, img1.shape, lab.shape)
+    # cv2.imshow("img1", img2show(img1))
+    # if img2 is not None:
+    #     cv2.imshow("img2", img2show(img2))
+    # cv2.imshow("lab", lab)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
 # train
 lr = 3e-5
@@ -75,7 +75,6 @@ losses = {}
 losses["types"] = [MixedLoss([BCELoss(), DiceLoss()], [1, 1])]
 losses["coef"] = [1]
 
-# TODO: cd / seg block can training, but big map can't training
 train(
     model=model,
     train_dataset=train_dataset,

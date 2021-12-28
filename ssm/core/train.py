@@ -158,7 +158,11 @@ def train(model,
                     break
             reader_cost_averager.record(time.time() - batch_start)
             edges = None
-            if len(data) == 3:
+            if len(data) == 2:
+                image1 = data[0]
+                image2 = None
+                labels = data[1].astype('int64')
+            elif len(data) == 3:
                 image1 = data[0]
                 if len(data[1].shape) == 4 and data[1].shape[1] != 1:
                     image2 = data[1]
@@ -166,11 +170,9 @@ def train(model,
                     image2 = None
                     edges = data[1].astype('int64')
                 labels = data[2].astype('int64')
-            else:  # len == 2
-                image1 = data[0]
-                image2 = None
-                labels = data[1].astype('int64')
-            if len(data) == 4:
+            else:  # len(data) == 4
+                image1, image2 = data[:2]
+                labels = data[2].astype('int64')
                 edges = data[3].astype('int64')
             if hasattr(model, 'data_format') and model.data_format == 'NHWC':
                 image1 = image1.transpose((0, 2, 3, 1))

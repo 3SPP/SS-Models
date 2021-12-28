@@ -22,10 +22,7 @@ import paddle
 from paddle import nn
 import paddle.nn.functional as F
 
-from paddleseg.cvlibs import manager
 
-
-@manager.LOSSES.add_component
 class LovaszSoftmaxLoss(nn.Layer):
     """
     Multi-class Lovasz-Softmax loss.
@@ -54,7 +51,6 @@ class LovaszSoftmaxLoss(nn.Layer):
         return loss
 
 
-@manager.LOSSES.add_component
 class LovaszHingeLoss(nn.Layer):
     """
     Binary Lovasz hinge loss.

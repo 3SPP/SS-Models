@@ -16,10 +16,7 @@ import paddle
 import paddle.nn as nn
 import paddle.nn.functional as F
 
-from paddleseg.cvlibs import manager
 
-
-@manager.LOSSES.add_component
 class BCELoss(nn.Layer):
     r"""
     This operator combines the sigmoid layer and the :ref:`api_nn_loss_BCELoss` layer.

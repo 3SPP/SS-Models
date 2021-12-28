@@ -15,12 +15,9 @@
 import paddle
 from paddle import nn
 import paddle.nn.functional as F
-
-from paddleseg.cvlibs import manager
 from paddleseg.models import losses
 
 
-@manager.LOSSES.add_component
 class EdgeAttentionLoss(nn.Layer):
     """
     Implements the cross entropy loss function. It only compute the edge part.
