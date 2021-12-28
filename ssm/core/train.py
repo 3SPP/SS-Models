@@ -17,6 +17,7 @@ import os
 import time
 from collections import deque
 import shutil
+from typing import List
 
 import paddle
 import paddle.nn.functional as F
@@ -50,7 +51,11 @@ def loss_computation(logits_list, labels, losses, edges=None):
                 logits_list[0], logits_list[1].detach()))
         else:
             loss_list.append(losses['coef'][i] * loss_i(logits, labels))
-    return loss_list[0]  # TODO: check it
+    # TODO: check it why
+    if isinstance(loss_list[0], List):
+        return loss_list[0] 
+    else:
+        return loss_list
 
 
 def train(model,
@@ -59,7 +64,7 @@ def train(model,
           optimizer=None,
           save_dir='output',
           iters=10000,
-          batch_size=2,
+          batch_size=4,
           resume_model=None,
           save_interval=1000,
           log_iters=10,
@@ -79,7 +84,7 @@ def train(model,
         optimizer (paddle.optimizer.Optimizer): The optimizer.
         save_dir (str, optional): The directory for saving the model snapshot. Default: 'output'.
         iters (int, optional): How may iters to train the model. Defualt: 10000.
-        batch_size (int, optional): Mini batch size of one gpu or cpu. Default: 2.
+        batch_size (int, optional): Mini batch size of one gpu or cpu. Default: 4.
         resume_model (str, optional): The path of resume model.
         save_interval (int, optional): How many iters to save a model snapshot once during training. Default: 1000.
         log_iters (int, optional): Display logging information at every log_iters. Default: 10.
@@ -152,10 +157,19 @@ def train(model,
                 else:
                     break
             reader_cost_averager.record(time.time() - batch_start)
-            image1 = data[0]
-            image2 = data[1]
-            labels = data[2].astype('int64')
             edges = None
+            if len(data) == 3:
+                image1 = data[0]
+                if len(data[1].shape) == 4 and data[1].shape[1] != 1:
+                    image2 = data[1]
+                else:
+                    image2 = None
+                    edges = data[1].astype('int64')
+                labels = data[2].astype('int64')
+            else:  # len == 2
+                image1 = data[0]
+                image2 = None
+                labels = data[1].astype('int64')
             if len(data) == 4:
                 edges = data[3].astype('int64')
             if hasattr(model, 'data_format') and model.data_format == 'NHWC':
@@ -316,11 +330,12 @@ def train(model,
             batch_start = time.time()
 
     # Calculate flops.
-    if local_rank == 0:
-        _, c, h, w = image1.shape
-        _ = paddle.flops(
-            model, [1, c, h, w],
-            custom_ops={paddle.nn.SyncBatchNorm: op_flops_funs.count_syncbn})
+    # TODO: cd model can't work
+    # if local_rank == 0:
+    #     _, c, h, w = image1.shape
+    #     _ = paddle.flops(
+    #         model, [1, c, h, w],
+    #         custom_ops={paddle.nn.SyncBatchNorm: op_flops_funs.count_syncbn})
 
     # Sleep for half a second to let dataloader release resources.
     time.sleep(0.5)

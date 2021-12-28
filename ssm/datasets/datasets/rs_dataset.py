@@ -113,21 +113,30 @@ class RSDataset(paddle.io.Dataset):
                                               im2=self.cimw_2.getData() if \
                                                   self.cimw_2 is not None else None)
                 im1 = im1[np.newaxis, ...]
-                im2 = im2[np.newaxis, ...]
-                return im1, im2, self.cimw_1.file_path
+                if im2 is None:
+                    return im1, self.cimw_1.file_path
+                else:
+                    im2 = im2[np.newaxis, ...]
+                    return im1, im2, self.cimw_1.file_path
             elif self.mode == 'val':
                 im1, im2, _ = self.transforms(im1=self.cimw_1.getData(),
                                               im2=self.cimw_2.getData() if \
                                                   self.cimw_2 is not None else None)
                 label = self.claw.getData()
                 label = label[np.newaxis, :, :]
-                return im1, im2, label
+                if im2 is None:
+                    return im1, label
+                else:
+                    return im1, im2, label
             else:
                 im1, im2, label = self.transforms(im1=self.cimw_1.getData(),
                                                   im2=self.cimw_2.getData() if \
                                                       self.cimw_2 is not None else None ,
                                                   label=self.claw.getData())
-                return im1, im2, label
+                if im2 is None:
+                    return im1, label
+                else:
+                    return im1, im2, label
 
     def __len__(self):
         return len(self.file_list)
