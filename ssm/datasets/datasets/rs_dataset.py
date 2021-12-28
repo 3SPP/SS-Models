@@ -43,8 +43,9 @@ class RSDataset(paddle.io.Dataset):
         self.num_classes = num_classes
         self.ignore_index = ignore_index
         self.big_map = big_map
-        self.curr_image_worker = None
-        self.curr_label_worker = None
+        self.cimw_1 = None
+        self.cimw_2 = None
+        self.claw = None
         self.__idx = 0
         if mode.lower() not in ['train', 'val', 'test']:
             raise ValueError(
@@ -98,35 +99,35 @@ class RSDataset(paddle.io.Dataset):
                 self.file_list.append([image1_worker, image2_worker, label_worker])
 
     def __getitem__(self, idx):
-        if self.big_map is False or \
-           (self.curr_image1_worker is None and self.curr_image2_worker is None and \
-                self.curr_label_worker is None) or \
-           (self.curr_image1_worker.cyc_grid is True and self.curr_image2_worker.cyc_grid is True and \
-               self.curr_label_worker.cyc_grid is True):
-            self.curr_image1_worker, self.curr_image2_worker, self.curr_label_worker = \
-                self.file_list[self.__idx]
-            self.__idx += 1
-            if self.__idx <= self.__len__():
-                if self.mode == 'test':
-                    im1, im2, _ = self.transforms(im1=self.curr_image1_worker.getData(),
-                                                im2=self.curr_image2_worker.getData() if \
-                                                    self.curr_image2_worker is not None else None)
-                    im1 = im1[np.newaxis, ...]
-                    im2 = im2[np.newaxis, ...]
-                    return im1, im2, self.curr_image1_worker.file_path
-                elif self.mode == 'val':
-                    im1, im2, _ = self.transforms(im1=self.curr_image1_worker.getData(),
-                                                im2=self.curr_image2_worker.getData() if \
-                                                    self.curr_image2_worker is not None else None)
-                    label = self.curr_label_worker.getData()
-                    label = label[np.newaxis, :, :]
-                    return im1, im2, label
-                else:
-                    im1, im2, label = self.transforms(im1=self.curr_image1_worker.getData(),
-                                                    im2=self.curr_image2_worker.getData() if \
-                                                        self.curr_image2_worker is not None else None ,
-                                                    label=self.curr_label_worker.getData())
-                    return im1, im2, label
+        if self.big_map is False:
+            self.__idx = idx
+            self.cimw_1, self.cimw_2, self.claw = self.file_list[self.__idx]
+        else:
+            if (self.cimw_1 is None and self.claw is None) or \
+               (self.cimw_1.cyc_grid is True and self.claw.cyc_grid is True):
+                self.cimw_1, self.cimw_2, self.claw = self.file_list[self.__idx]
+                self.__idx += 1
+        if self.__idx <= self.__len__():
+            if self.mode == 'test':
+                im1, im2, _ = self.transforms(im1=self.cimw_1.getData(),
+                                              im2=self.cimw_2.getData() if \
+                                                  self.cimw_2 is not None else None)
+                im1 = im1[np.newaxis, ...]
+                im2 = im2[np.newaxis, ...]
+                return im1, im2, self.cimw_1.file_path
+            elif self.mode == 'val':
+                im1, im2, _ = self.transforms(im1=self.cimw_1.getData(),
+                                              im2=self.cimw_2.getData() if \
+                                                  self.cimw_2 is not None else None)
+                label = self.claw.getData()
+                label = label[np.newaxis, :, :]
+                return im1, im2, label
+            else:
+                im1, im2, label = self.transforms(im1=self.cimw_1.getData(),
+                                                  im2=self.cimw_2.getData() if \
+                                                      self.cimw_2 is not None else None ,
+                                                  label=self.claw.getData())
+                return im1, im2, label
 
     def __len__(self):
         return len(self.file_list)

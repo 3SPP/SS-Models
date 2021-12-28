@@ -33,29 +33,32 @@ train_dataset = RSDataset(
     dataset_root='DataSet',
     num_classes=2,
     mode='train',
+    # work='seg',
     work='cd',
-    file_path='DataSet/train_list_3.txt',
-    # file_path='DataSet/train_list_2.txt',
+    # file_path='DataSet/train_list.txt',  # seg / 512x512
+    # file_path='DataSet/train_list_2.txt',  # seg / big_map
+    file_path='DataSet/train_list_3.txt',  # cd / 512x512
+    # file_path='DataSet/train_list_4.txt',  # cd / big_map
     separator=' ',
-    big_map=False  # True
+    big_map=False
+    # big_map=True
 )
 
 lens = len(train_dataset)
 print(f"lens={lens}")
-for idx, data in enumerate(train_dataset):
-    img1, img2, lab = data
-    if img2 is not None:
-        print(idx, img1.shape, img2.shape, lab.shape)
-    else:
-        print(idx, img1.shape, lab.shape)
-    cv2.imshow("img1", img2show(img1))
-    if img2 is not None:
-        cv2.imshow("img2", img2show(img2))
-    cv2.imshow("lab", lab)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+# for idx, data in enumerate(train_dataset):
+#     img1, img2, lab = data
+#     if img2 is not None:
+#         print(idx, img1.shape, img2.shape, lab.shape)
+#     else:
+#         print(idx, img1.shape, lab.shape)
+#     cv2.imshow("img1", img2show(img1))
+#     if img2 is not None:
+#         cv2.imshow("img2", img2show(img2))
+#     cv2.imshow("lab", lab)
+#     cv2.waitKey(0)
+#     cv2.destroyAllWindows()
 
-# TODO: have bug
 # lr = 3e-5
 # epochs = 2
 # batch_size = 2

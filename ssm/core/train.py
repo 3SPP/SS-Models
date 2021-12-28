@@ -111,8 +111,6 @@ def train(model,
             optimizer)  # The return is Fleet object
         ddp_model = paddle.distributed.fleet.distributed_model(model)
 
-
-    # TODO: have some problems
     batch_sampler = paddle.io.DistributedBatchSampler(
         train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
