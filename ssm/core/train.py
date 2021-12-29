@@ -22,9 +22,9 @@ from typing import List
 import paddle
 import paddle.nn.functional as F
 
-from paddleseg.utils import (TimeAverager, calculate_eta, resume, logger,
+from ssm.utils import (TimeAverager, calculate_eta, resume, logger,
                              worker_init_fn, train_profiler, op_flops_funs)
-from paddleseg.core.val import evaluate
+from ssm.core.val import evaluate
 
 
 def check_logits_losses(logits_list, losses):

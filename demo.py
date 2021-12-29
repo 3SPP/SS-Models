@@ -4,7 +4,7 @@ from ssm.models.cd import SiamUNet
 from ssm.datasets import RSDataset
 import ssm.datasets.transforms as T
 from ssm.models.losses import MixedLoss, BCELoss, DiceLoss
-from ssm.core import train
+from ssm.core import train, predict
 
 # DEBUG
 import cv2
@@ -46,7 +46,40 @@ train_dataset = RSDataset(
     big_map=True
 )
 
-# display
+val_transforms = [
+    T.Resize(target_size=(256, 256))
+]
+val_dataset = RSDataset(
+    transforms=val_transforms,
+    dataset_root='DataSet',
+    num_classes=2,
+    mode='val',
+    # work='seg',
+    work='cd',
+    # file_path='DataSet/train_list.txt',  # seg / block
+    # file_path='DataSet/train_list_2.txt',  # seg / big_map
+    file_path='DataSet/train_list_3.txt',  # cd / block
+    # file_path='DataSet/train_list_4.txt',  # cd / big_map
+    separator=' ',
+    big_map=False
+    # big_map=True
+)
+
+infer_dataset = RSDataset(
+    transforms=val_transforms,
+    dataset_root='DataSet',
+    num_classes=2,
+    mode='infer',
+    # work='seg',
+    work='cd',
+    # file_path='DataSet/train_list_i.txt',  # seg / block
+    file_path='DataSet/train_list_3_i.txt',  # cd / block
+    separator=' ',
+    big_map=False
+    # big_map=True
+)
+
+# display train datas
 lens = len(train_dataset)
 print(f"lens={lens}")
 for idx, data in enumerate(train_dataset):
@@ -66,7 +99,7 @@ for idx, data in enumerate(train_dataset):
 
 # train
 lr = 3e-5
-epochs = 2
+epochs = 10
 batch_size = 2
 iters = epochs * len(train_dataset) // batch_size
 
@@ -78,12 +111,21 @@ losses["coef"] = [1]
 train(
     model=model,
     train_dataset=train_dataset,
+    val_dataset=val_dataset,
     optimizer=optimizer,
     save_dir="output",
     iters=iters,
     batch_size=batch_size,
-    save_interval=1,
+    save_interval=iters // 5,
     log_iters=1,
     num_workers=0,
     losses=losses,
-    use_vdl=True)
+    use_vdl=True
+)
+
+# predict
+predict(
+    model,
+    "output/best_model/model.pdparams",
+    infer_dataset
+)

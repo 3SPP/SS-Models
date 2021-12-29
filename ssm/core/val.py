@@ -19,8 +19,8 @@ import time
 import paddle
 import paddle.nn.functional as F
 
-from paddleseg.utils import metrics, TimeAverager, calculate_eta, logger, progbar
-from paddleseg.core import infer
+from ssm.utils import metrics, TimeAverager, calculate_eta, logger, progbar
+from ssm.core import infer
 
 np.set_printoptions(suppress=True)
 
@@ -83,14 +83,22 @@ def evaluate(model,
         logger.info(
             "Start evaluating (total_samples: {}, total_iters: {})...".format(
                 len(eval_dataset), total_iters))
-    #TODO(chenguowei): fix log print error with multi-gpus
+    # TODO(chenguowei): fix log print error with multi-gpus
     progbar_val = progbar.Progbar(
         target=total_iters, verbose=1 if nranks < 2 else 2)
     reader_cost_averager = TimeAverager()
     batch_cost_averager = TimeAverager()
     batch_start = time.time()
     with paddle.no_grad():
-        for iter, (im1, im2, label) in enumerate(loader):
+        for iter, data in enumerate(loader):
+            if len(data) == 2:
+                im1 = data[0]
+                im2 = None
+                label = data[1]
+            else:  # len(data) == 3
+                im1 = data[0]
+                im2 = data[1]
+                label = data[2]
             reader_cost_averager.record(time.time() - batch_start)
             label = label.astype('int64')
 

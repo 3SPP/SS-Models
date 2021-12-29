@@ -48,9 +48,9 @@ class RSDataset(paddle.io.Dataset):
         self.claw = None
         self.all_grids_number = 0
         self.__idx = 0
-        if mode.lower() not in ['train', 'val', 'test']:
+        if mode.lower() not in ['train', 'val', 'infer']:
             raise ValueError(
-                "mode should be 'train', 'val' or 'test', but got {}.".format(mode))
+                "mode should be 'train', 'val' or 'infer', but got {}.".format(mode))
         if work.lower() not in ['seg', 'det', 'cd']:
             raise ValueError(
                 "work should be 'seg', 'det' or 'cd', but got {}.".format(work))
@@ -72,19 +72,19 @@ class RSDataset(paddle.io.Dataset):
         with open(file_path, 'r') as f:
             for line in f:
                 items = line.strip().split(separator)
-                if len(items) == 1 and work != "cd" and mode == "test":
+                if len(items) == 1 and work != "cd" and mode == "infer":
                     image1_path = os.path.join(self.dataset_root, items[0])
                     image2_path = None
                     label_path = None
-                elif len(items) == 2 and work == "cd" and mode == "test":
+                elif len(items) == 2 and work == "cd" and mode == "infer":
                     image1_path = os.path.join(self.dataset_root, items[0])
                     image2_path = os.path.join(self.dataset_root, items[1])
                     label_path = None
-                elif len(items) == 2 and work != "cd" and mode != "test":
+                elif len(items) == 2 and work != "cd" and mode != "infer":
                     image1_path = os.path.join(self.dataset_root, items[0])
                     image2_path = None
                     label_path = os.path.join(self.dataset_root, items[1])
-                elif len(items) == 3 and work == "cd" and mode == "train":
+                elif len(items) == 3 and work == "cd" and mode != "infer":
                     image1_path = os.path.join(self.dataset_root, items[0])
                     image2_path = os.path.join(self.dataset_root, items[1])
                     label_path = os.path.join(self.dataset_root, items[2])
@@ -97,7 +97,7 @@ class RSDataset(paddle.io.Dataset):
                                 if image2_path is not None else None
                 label_worker = Raster(label_path, [1, 1, 1], big_map, grid_size, overlap) \
                                if label_path is not None else None
-                self.all_grids_number += label_worker.grids_number
+                self.all_grids_number += image1_worker.grids_number
                 self.file_list.append([image1_worker, image2_worker, label_worker])
 
     def __getitem__(self, idx):
@@ -112,15 +112,13 @@ class RSDataset(paddle.io.Dataset):
                         self.__idx = 0
                     self.cimw_1, self.cimw_2, self.claw = self.file_list[self.__idx]
                     self.__idx += 1
-            if self.mode == 'test':
+            if self.mode == 'infer':
                 im1, im2, _ = self.transforms(im1=self.cimw_1.getData(),
                                               im2=self.cimw_2.getData() if \
                                                   self.cimw_2 is not None else None)
-                im1 = im1[np.newaxis, ...]
                 if im2 is None:
                     return im1, self.cimw_1.file_path
                 else:
-                    im2 = im2[np.newaxis, ...]
                     return im1, im2, self.cimw_1.file_path
             elif self.mode == 'val':
                 im1, im2, _ = self.transforms(im1=self.cimw_1.getData(),

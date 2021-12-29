@@ -19,12 +19,12 @@ import numpy as np
 from PIL import Image as PILImage
 
 
-def visualize(image, result, color_map, save_dir=None, weight=0.6):
+def visualize(im, result, color_map, save_dir=None, weight=0.6):
     """
     Convert predict result to color image, and save added image.
 
     Args:
-        image (str): The path of origin image.
+        im (np.ndarray): The origin image.
         result (np.ndarray): The predict result of image.
         color_map (list): The color used to save the prediction results.
         save_dir (str): The directory for saving visual image. Default: None.
@@ -42,13 +42,12 @@ def visualize(image, result, color_map, save_dir=None, weight=0.6):
     c3 = cv2.LUT(result, color_map[:, 2])
     pseudo_img = np.dstack((c1, c2, c3))
 
-    im = cv2.imread(image)
     vis_result = cv2.addWeighted(im, weight, pseudo_img, 1 - weight, 0)
 
     if save_dir is not None:
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
-        image_name = os.path.split(image)[-1]
+        image_name = os.path.split(im)[-1]
         out_path = os.path.join(save_dir, image_name)
         cv2.imwrite(out_path, vis_result)
     else:

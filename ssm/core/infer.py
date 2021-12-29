@@ -231,7 +231,7 @@ def inference(model,
         if im2 is not None:
             im2 = im2.transpose((0, 2, 3, 1))
     if not is_slide:
-        if im2 in None:
+        if im2 is None:
             logits = model(im1)
         else:
             logits = model(im1, im2)
