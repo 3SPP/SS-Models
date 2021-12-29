@@ -24,11 +24,6 @@ from ssm import utils
 from ssm.core import infer
 from ssm.utils import logger, progbar, visualize
 
-try:
-    from osgeo import gdal
-except ImportError:
-    import gdal
-
 
 def mkdir(path):
     sub_dir = os.path.dirname(path)
