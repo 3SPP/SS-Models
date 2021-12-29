@@ -1,3 +1,3 @@
-opencv-python==4.5.2.54
-paddleseg
+opencv-python>=4.5.2.54
+paddlepaddle>=2.2.0
 GDAL
