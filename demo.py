@@ -1,6 +1,7 @@
 import paddle
-from ssm.models.seg import FarSeg
-from ssm.models.cd import SiamUNet
+from ssm.models.backbones import HRNet_W18
+from ssm.models.seg import OCRNet
+from ssm.models.cd import SiamOCRNet
 from ssm.datasets import RSDataset
 import ssm.datasets.transforms as T
 from ssm.models.losses import MixedLoss, BCELoss, DiceLoss
@@ -13,9 +14,10 @@ import cv2
 # model
 x1 = paddle.randn([2, 3, 256, 256])
 x2 = paddle.randn([2, 3, 256, 256])
-model = SiamUNet(num_classes=2, siam=True, cat=True)
+model = SiamOCRNet(num_classes=2, backbone=HRNet_W18(in_channels=3), 
+                   backbone_indices=[0], siam=True, cat=True)
 pred = model(x1, x2)
-# model = FarSeg(num_classes=2)
+# model = OCRNet(num_classes=2, backbone=HRNet_W18(in_channels=3), backbone_indices=[0])
 # pred = model(x1)
 print(pred[0].shape)
 
@@ -82,31 +84,31 @@ infer_dataset = RSDataset(
 # display train datas
 lens = len(train_dataset)
 print(f"lens={lens}")
-for idx, data in enumerate(train_dataset):
-    if len(data) == 3:
-        img1, img2, lab = data
-        print(idx, img1.shape, img2.shape, lab.shape)
-    elif len(data) == 2:
-        img1, lab = data
-        img2 = None
-        print(idx, img1.shape, lab.shape)
-    # cv2.imshow("img1", img2show(img1))
-    # if img2 is not None:
-    #     cv2.imshow("img2", img2show(img2))
-    # cv2.imshow("lab", lab)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+# for idx, data in enumerate(train_dataset):
+#     if len(data) == 3:
+#         img1, img2, lab = data
+#         print(idx, img1.shape, img2.shape, lab.shape)
+#     elif len(data) == 2:
+#         img1, lab = data
+#         img2 = None
+#         print(idx, img1.shape, lab.shape)
+#     # cv2.imshow("img1", img2show(img1))
+#     # if img2 is not None:
+#     #     cv2.imshow("img2", img2show(img2))
+#     # cv2.imshow("lab", lab)
+#     # cv2.waitKey(0)
+#     # cv2.destroyAllWindows()
 
 # train
 lr = 3e-5
-epochs = 10
-batch_size = 2
+epochs = 300
+batch_size = 4
 iters = epochs * len(train_dataset) // batch_size
 
 optimizer = paddle.optimizer.AdamW(lr, parameters=model.parameters())
 losses = {}
-losses["types"] = [MixedLoss([BCELoss(), DiceLoss()], [1, 1])]
-losses["coef"] = [1]
+losses["types"] = [MixedLoss([BCELoss(), DiceLoss()], [1, 1])] * 2
+losses["coef"] = [1, 0.4]
 
 train(
     model=model,
