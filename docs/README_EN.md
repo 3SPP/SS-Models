@@ -11,4 +11,5 @@ Remote sensing models and dataloader warehouse.
 | Semantic segmentation | Change detection | Object detection |
 | :-------------------: | :--------------: | :--------------: |
 |        FarSeg         |     SiamUNet     |                  |
-|         UNet          |                  |                  |
+|         UNet          |    SiamOCRNet    |                  |
+|        OCRNet         |                  |                  |
