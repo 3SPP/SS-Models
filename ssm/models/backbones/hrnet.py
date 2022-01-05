@@ -19,9 +19,8 @@ import paddle
 import paddle.nn as nn
 import paddle.nn.functional as F
 
-from ssm.models.utils import normal_init, constant_init
 from ssm.models.utils import ConvBNReLU, ConvBN, Add, Activation
-# from paddleseg.utils import utils
+from ssm.models.utils import normal_init, constant_init
 
 __all__ = [
     "HRNet_W18_Small_V1", "HRNet_W18_Small_V2", "HRNet_W18", "HRNet_W30",
